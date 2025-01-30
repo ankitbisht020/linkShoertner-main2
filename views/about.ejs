@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        
+        /* The popup background overlay */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(32, 33, 32, 0.8); /* Black background with transparency */
+            display: none; /* Initially hidden */
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* The popup content */
+        .popup-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            position: relative;
+        }
+
+        /* Close button */
+        .close-popup {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+        
+    </style>
+</head>
+<body class="flex flex-col  min-h-screen" >
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <!-- -- Logo or Brand Name  -->
+            <div class="  flex">
+                <img  class=" w-15 h-10 rounded-md border-2  border-zinc-600" src="https://think360studio-media.s3.ap-south-1.amazonaws.com/download/india-flag-2021-wallpaper-1.png" alt="logo!">
+            <div class="text-white text-lg ml-1 ">
+                <p  class="font-bold" id="currentdate"></p>
+                <p class="text-xs" id="currenttime"></p>
+            </div>
+            </div>
+    
+             <!-- Links (hidden on small screens, shown on large screens) --> 
+            <div class="hidden md:flex space-x-4">
+                <a href="/" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                <a href="/about" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">About</a>
+                <a href="/contact" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+            </div>
+    
+            <!-- Right Section: Login/Register Buttons --> 
+            <% if (!decode) { %>
+                <div id='login' class="hidden md:flex space-x-4">
+                    <button onclick="openPopupLogin()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Login
+                    </button>
+                    <button onclick="openPopupRegister()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                        Register
+                    </button>
+                </div> 
+            <% } else { %>
+                <div class=" flex flex-wrap w-min justify-end">
+                    <p class="text-white "> <%= decode.email %></p>
+                    <a  href="/logout" class="bg-red-600 rounded-lg py-1 px-2 hover:bg-red-400 font-bold mt-1 ml-20">Log Out</a>
+                    
+                    
+                    </div>
+                <% } %>
+    
+             <!-- Mobile Menu Button (visible on small screens) --> 
+            <div class="md:hidden">
+                <button class="text-gray-300 hover:text-white focus:outline-none" id="mobile-menu-button">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+         <!-- Mobile Menu (hidden by default) --> 
+        <div class="md:hidden flex text-center" id="mobile-menu" style="display: none;">
+            <div class="px-2 pt-2 pb-3 space-y-0.8 sm:px-3">
+                <a href="/" class="text-gray-300 hover:text-white block px-3 py-1.5 rounded-md text-base font-medium">Home</a>
+                <a href="/about" class="text-gray-300 hover:text-white block px-3 py-1.5 rounded-md text-base font-medium">About</a>
+                <a href="/contact" class="text-gray-300 mb-3 hover:text-white block px-3 py-1.5 rounded-md text-base font-medium">Contact</a>
+                <button onclick="openPopupLogin()" class="bg-blue-500 hover:bg-blue-700 text-white  font-bold  px-3 py-2 rounded-md text-base ">Login</button>
+                <button onclick="openPopupRegister()" class="bg-green-500 hover:bg-green-700 text-white   font-bold  px-3 py-2 rounded-md text-base ">Register</button>
+            </div>
+        </div>
+    </nav>
+    <!-- open popup Login -->
+    <div class="popup-overlay" id="popupLogin">
+        <div class="popup-content">
+        <span class="close-popup" onclick="closePopupLogin()">&times;</span>
+        <h2 class="text-2xl text-black mb-4">Login here..</h2>
+        <form action="/login" method="GET">
+        
+        <label for="email" class="text-black">Email</label>
+        <input class="border rounded-lg w-full p-2 mb-4" type="email" id="email" name="email" placeholder="Enter your email" required>
+
+        <label for="password" class="text-black">Password</label>
+        <input class="border rounded-lg w-full p-2 mb-4" type="password" id="password" name="password" placeholder="Enter your password" required>
+
+        <button class="bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 rounded" type="submit">Login</button>
+        <div class="my-3">
+        
+        </div>
+        </form>
+        <button onclick="openPopupRegister()" class="bg-blue-500 hover:bg-blue-400 mt-2 text-white font-bold py-2 px-4 rounded">Don't have a account</button>
+    </div>
+    </div>
+  
+    <!-- popupform Register -->
+    <div class="popup-overlay" id="popupRegister">
+        <div class="popup-content">
+        <span class="close-popup" onclick="closePopupRegister()">&times;</span>
+        <h2 class="text-2xl text-black mb-4">Register here</h2>
+        <form action="/createuser" method="POST">
+        <label for="name" class="text-black">Name</label>
+        <input class="border rounded-lg w-full p-2 mb-4" type="text" id="name" name="name" placeholder="Enter your name" required>
+
+        <label for="email" class="text-black">Email</label>
+        <input class="border rounded-lg w-full p-2 mb-4" type="email" id="email" name="email" placeholder="Enter your email" required>
+
+        <label for="password" class="text-black">Password</label>
+        <input class="border rounded-lg w-full p-2 mb-4" type="password" id="password" name="password" placeholder="Enter your password" required>
+
+        <button class="bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 rounded" type="submit">Register</button>
+        <div class="my-3">
+        
+        </div>
+        </form>
+        <button onclick="openPopupLogin()" class="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded"> Already have a account</button>
+    </div>
+    </div>
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-4">About Us</h1>
+        
+        <p class="text-lg mb-4">
+            Welcome to our link shortening service! We provide a simple and effective way to shorten long URLs into manageable links. Whether you're sharing on social media, sending emails, or just trying to save space, our service helps you create short, user-friendly URLs quickly and easily.
+        </p>
+
+        <h2 class="text-2xl font-semibold mb-2">Our Features</h2>
+        <ul class="list-disc list-inside mb-4">
+            <li>🌐 **Easy URL Shortening**: Transform long links into concise URLs in just a few clicks.</li>
+            <li>🔗 **Customizable Links**: Choose custom aliases for your shortened URLs for better branding.</li>
+            <li>📊 **Analytics Dashboard**: Track the number of clicks and performance of your shortened links.</li>
+            <li>🔒 **Secure and Reliable**: Your data is safe with us, and our service is always up and running.</li>
+            <li>🧑‍🤝‍🧑 **User Accounts**: Create an account to manage your links, edit them, and keep track of your activity.</li>
+        </ul>
+
+        <h2 class="text-2xl font-semibold mb-2">How It Works</h2>
+        <p class="mb-4">
+            To get started, simply paste your long URL into our input box, click "Shorten", and receive your new short link instantly. You can copy this link and share it wherever you like!
+        </p>
+        <p class="mb-4">
+            For registered users, you can create an account to access additional features such as link management, detailed analytics, and more. Your links will be saved to your profile for easy access.
+        </p>
+
+        <h2 class="text-2xl font-semibold mb-2">Get Started</h2>
+        <p class="mb-4">
+            Ready to simplify your link sharing? <a href="/" class="text-blue-500 underline">Click here to shorten your first link!</a>
+        </p>
+
+        <footer class="mt-10">
+            <p class="text-sm text-gray-600">© 2024 Link Shortener. All rights reserved.</p>
+        </footer>
+    </div>
+    <footer class=" mt-auto ">
+   
+        <div class="  flex justify-center items-center space-x-6 ">
+            <!-- Email Link -->
+            <a href="mailto:ankitbisht9837@gmail.com" class=" my-2 flex items-center space-x-2 text-gray-700 hover:text-blue-600">
+                <img src="https://img.icons8.com/ios-filled/50/000000/email-open.png" alt="Email Logo" class="w-6 h-6">
+                <span>Email</span>
+            </a>
+        
+            <!-- LinkedIn Link -->
+            <a href="https://www.linkedin.com/in/ankitb-webd9905/" target="_blank" class=" my-2 flex items-center space-x-2 text-gray-700 hover:text-blue-600">
+                <img src="https://img.icons8.com/ios-filled/50/0077b5/linkedin.png" alt="LinkedIn Logo" class="w-6 h-6">
+                <span>LinkedIn</span>
+            </a>
+        
+            <!-- GitHub Link -->
+            <a href="https://github.com/ankitbisht020" target="_blank" class=" my-2 flex items-center space-x-2 text-gray-700 hover:text-blue-600">
+                <img src="https://img.icons8.com/ios-filled/50/000000/github.png" alt="GitHub Logo" class="w-6 h-6">
+                <span>GitHub</span>
+            </a>
+        </div>
+        </footer>
+    <script>
+        function openPopupLogin() {
+            document.getElementById("popupLogin").style.display = "flex";
+            document.getElementById("popupRegister").style.display = "none";
+        }
+
+        function closePopupLogin() {
+            document.getElementById("popupLogin").style.display = "none";
+        }
+        function openPopupRegister() {
+            document.getElementById("popupRegister").style.display = "flex";
+            document.getElementById("popupLogin").style.display = "none";
+        }
+
+        function closePopupRegister() {
+            document.getElementById("popupRegister").style.display = "none";
+        }
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+    
+        mobileMenuButton.addEventListener('click', () => {
+            if (mobileMenu.style.display === 'none' || mobileMenu.style.display === '') {
+                mobileMenu.style.display = 'block';
+            } else {
+                mobileMenu.style.display = 'none';
+            }
+        });
+        function showTime() {
+            const date =new Date();
+            const timeinidia =new Intl.DateTimeFormat('en-US',{
+                timeZone: 'Asia/Kolkata',
+                timeStyle: 'medium',
+                dateStyle: 'medium',
+            }).format(date);
+            const currentdate =timeinidia.slice(0,12);
+            const currentime =timeinidia.slice(13,24);
+            document.getElementById('currentdate').innerHTML = currentdate;
+            document.getElementById('currenttime').innerHTML = currentime;
+        }
+        showTime();
+        setInterval(function () {
+            showTime();
+        }, 1000);
+    </script>
+</body>
+</html>

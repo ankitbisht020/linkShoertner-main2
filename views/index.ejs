@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <link rel="icon" type="image/png" href="../public/images/favicon.png">
+    <!-- Tailwind CSS CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        
+        /* The popup background overlay */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(32, 33, 32, 0.8); /* Black background with transparency */
+            display: none; /* Initially hidden */
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* The popup content */
+        .popup-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            position: relative;
+        }
+
+        /* Close button */
+        .close-popup {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+        .alert {
+            transition: opacity 1s ease;
+            text-align: center;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          th, td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+          }
+          th {
+            background-color: #f4f4f4;
+          }
+    </style>
+</head>
+<body  class="flex flex-col  min-h-screen">
+
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <!-- -- Logo or Brand Name  -->
+             <div class="  flex ">
+                <img  class=" w-15 h-10 rounded-md border-2  border-zinc-600" src="https://think360studio-media.s3.ap-south-1.amazonaws.com/download/india-flag-2021-wallpaper-1.png" alt="logo!">
+            <div class="text-white text-lg  ml-1">
+                <p  class="font-bold" id="currentdate"></p>
+                <p  class="text-xs" id="currenttime"></p>
+            </div>
+            </div>
+    
+             <!-- Links (hidden on small screens, shown on large screens) --> 
+            <div class="hidden md:flex space-x-4">
+                <a href="/" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                <a href="/about" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">About</a>
+                <a href="/contact" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+            </div>
+    
+            <!-- Right Section: Login/Register Buttons --> 
+            <% if (!decode) { %>
+                <div id='login' class="hidden md:flex space-x-4">
+                    <button onclick="openPopupLogin()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Login
+                    </button>
+                    <button onclick="openPopupRegister()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                        Register
+                    </button>
+                </div> 
+            <% } else { %>
+                <div class=" flex w-min  justify-end flex-wrap">
+                <p class="text-white"> <%= decode.email %></p>
+                <a  href="/logout" class="bg-red-600 rounded-lg py-1 px-2 hover:bg-red-400 font-bold mt-1 ">Log Out</a>
+                
+                
+                </div>
+            <% } %>
+             <!-- Mobile Menu Button (visible on small screens) --> 
+            <div class="md:hidden">
+                <button class="text-gray-300 hover:text-white focus:outline-none" id="mobile-menu-button">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+         <!-- Mobile Menu (hidden by default) --> 
+        <div class="md:hidden flex text-center" id="mobile-menu" style="display: none;">
+            <div class="px-2 pt-2 pb-3 space-y-0.8 sm:px-3">
+                <a href="/" class="text-gray-300 hover:text-white block px-3 py-1.5 rounded-md text-base font-medium">Home</a>
+                <a href="/about" class="text-gray-300 hover:text-white block px-3 py-1.5 rounded-md text-base font-medium">About</a>
+                <a href="/contact" class="text-gray-300 mb-3 hover:text-white block px-3 py-1.5 rounded-md text-base font-medium">Contact</a>
+                <button onclick="openPopupLogin()" class="bg-blue-500 hover:bg-blue-700 text-white  font-bold  px-3 py-2 rounded-md text-base ">Login</button>
+                <button onclick="openPopupRegister()" class="bg-green-500 hover:bg-green-700 text-white   font-bold  px-3 py-2 rounded-md text-base ">Register</button>
+            </div>
+        </div>
+    </nav>
+    <!-- open popup Login -->
+    <div class="popup-overlay" id="popupLogin">
+        <div class="popup-content">
+        <span class="close-popup" onclick="closePopupLogin()">&times;</span>
+        <h2 class="text-2xl text-black mb-4">Login here..</h2>
+        <form action="/login" method="POST">
+        
+        <label for="email" class="text-black">Email</label>
+        <input class="border rounded-lg w-full p-2 mb-4" type="email" id="email" name="email" placeholder="Enter your email" required>
+
+        <label for="password" class="text-black">Password</label>
+        <input class="border rounded-lg w-full p-2 mb-4" type="password" id="password" name="password" placeholder="Enter your password" required>
+
+        <button class="bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 rounded" type="submit">Login</button>
+        </form>
+        <button onclick="openPopupRegister()" class="bg-blue-500 hover:bg-blue-400 mt-2 text-white font-bold py-2 px-4 rounded">Don't have a account</button>
+    </div>
+    </div>
+  
+    <!-- popupform Register -->
+    <div class="popup-overlay" id="popupRegister">
+        <div class="popup-content">
+        <span class="close-popup" onclick="closePopupRegister()">&times;</span>
+        <h2 class="text-2xl text-black mb-4">Register here</h2>
+        <form action="/createuser" method="POST">
+
+        <label for="name" class="text-black">Name</label>
+        <input class="border rounded-lg w-full p-2 mb-4" type="text" id="name" name="name" placeholder="Enter your name" required>
+
+        <label for="email" class="text-black">Email</label>
+        <input class="border rounded-lg w-full p-2 mb-4" type="email" id="email" name="email" placeholder="Enter your email" required>
+
+        <label for="password" class="text-black">Password</label>
+        <input class="border rounded-lg w-full p-2 mb-4" type="password" id="password" name="password" placeholder="Enter your password" required>
+
+        <button class="bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 rounded" type="submit">Register</button>
+        <div class="my-3">
+        
+        </div>
+        </form>
+        <button onclick="openPopupLogin()" class="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded"> Already have a account</button>
+    </div>
+    </div>
+    <% if (successMessage) { %>
+        <div id="alert" class=" bg-green-600 alert alert-success">
+            <p><%= successMessage %></p>
+        </div>
+    <% } %>
+    <div class="container mx-auto p-6">
+        <!-- Header -->
+        <h1 class="text-4xl font-bold text-center text-gray-800 ">URL Shortener</h1>
+         
+
+        <!-- Form to Shorten URL -->
+        <div class="max-w-xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+            <form action="/shorten" method="POST">
+                <label for="url" class="block text-lg font-semibold mb-2 text-gray-700">Enter the URL to shorten:</label>
+                <input type="url" name="url" id="url" placeholder="https://example.com" required class="w-full p-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+                <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-md hover:bg-indigo-500 transition duration-300">
+                    Shorten URL
+                </button>
+            </form>
+            <%if(decode){%>
+            <div class="text-center mt-4">
+            <button id="historybutton" class="bg-green-600 hover:bg-green-500 px-2 py-1 rounded-lg py-2 w-full text-white  " onclick="history()"> Click here to show and edit your link History</button>
+            </div>
+            <%}%>
+        </div>
+
+        <!-- Display Shortened URL (conditionally rendered) -->
+        <% if (shortenedUrl) { %>
+            <div class="mt-10 text-center">
+                <p class="text-xl text-gray-800">Shortened URL:</p>
+                <div class="flex justify-center items-center mt-3">
+                    <a id="shortUrl" href="<%= shortenedUrl%>"  target="_blank" class="text-indigo-600 text-xl font-bold hover:underline">
+                        <%= shortenedUrl%>
+                    </a>
+                    <!-- Copy Button -->
+                    <button onclick="copyToClipboard('<%= shortenedUrl%>')" class="ml-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-400 transition duration-300">
+                        Copy
+                    </button>
+                </div>
+            </div>  
+            <%}%>  
+    </div>
+    
+    <div id="history" class="  flex flex-wrap hidden  justify-center item-center  mt-3">
+        <h1 class="font-bold  mb-2 text-4xl">History</h1>
+        <table class="w-full">
+            <thead >
+              <tr>
+                <th>S.NO</th>
+                <th>Shortened Link</th>
+                <th>Original Link</th>
+              </tr>
+            </thead>
+            <tbody id="table">   
+               
+            </tbody>
+          </table>
+     </div>
+     
+     <footer class=" mt-auto ">
+   
+        <div class="  flex justify-center items-center space-x-6 ">
+            <!-- Email Link -->
+            <a href="mailto:ankitbisht9837@gmail.com" class=" my-2 flex items-center space-x-2 text-gray-700 hover:text-blue-600">
+                <img src="https://img.icons8.com/ios-filled/50/000000/email-open.png" alt="Email Logo" class="w-6 h-6">
+                <span>Email</span>
+            </a>
+        
+            <!-- LinkedIn Link -->
+            <a href="https://www.linkedin.com/in/ankitb-webd9905/" target="_blank" class=" my-2 flex items-center space-x-2 text-gray-700 hover:text-blue-600">
+                <img src="https://img.icons8.com/ios-filled/50/0077b5/linkedin.png" alt="LinkedIn Logo" class="w-6 h-6">
+                <span>LinkedIn</span>
+            </a>
+        
+            <!-- GitHub Link -->
+            <a href="https://github.com/ankitbisht020" target="_blank" class=" my-2 flex items-center space-x-2 text-gray-700 hover:text-blue-600">
+                <img src="https://img.icons8.com/ios-filled/50/000000/github.png" alt="GitHub Logo" class="w-6 h-6">
+                <span>GitHub</span>
+            </a>
+        </div>
+        </footer>
+        <span id="hostname" class="hidden"><%= hostname %></span>
+
+    <script>
+    
+    var table="hide";
+    function history() {
+    const historyButton = document.getElementById("historybutton");
+    const historyTable = document.getElementById("history");
+    const hostname = document.getElementById("hostname").innerText;  // Get hostname
+    if (table === "hide") {
+        table = "show";
+        fetch('/showhistory', { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                const tableData = data.map((val, index) =>
+            
+                    `<tr>
+                        <td class="text-xl font-bold">${index + 1}</td>
+                        <td class="text-blue-900 w-full flex item-center hover:underline">
+                            <a href='/g/${val.shortId}' target="_blank">${hostname}/g/${val.shortId}</a>
+                            <button onclick="copyToClipboard('${hostname}/g/${val.shortId}')" class="ml-4  bg-zinc-300 rounded-md  hover:bg-zinc-500">
+                                <img width="25" height="25" src="https://img.icons8.com/plasticine/100/copy.png" alt="copy"/>
+                            </button>
+                        </td>
+                        <td>
+                            <a class="text-blue-500 hover:underline" href='${val.redirectURL}' target="_blank">${val.redirectURL}</a>
+                            <a class="bg-red-500 hover:bg-red-700 ml-10 fas fa-trash-alt p-1 rounded-lg" href="/delete/${val._id}"></a>
+                        </td>
+                    </tr>`
+                ).join("");
+                document.getElementById("table").innerHTML = tableData;
+                historyButton.innerText = "Hide the Table";
+                historyTable.style.display = "flex";
+            
+            });
+    } else {
+        table = "hide";
+        historyButton.innerText = "Click here to show and edit your link History";
+        historyTable.style.display = "none";
+    }
+}
+
+    
+
+        function openPopupLogin() {
+            document.getElementById("popupLogin").style.display = "flex";
+            document.getElementById("popupRegister").style.display = "none";
+        }
+
+        function closePopupLogin() {
+            document.getElementById("popupLogin").style.display = "none";
+        }
+        function openPopupRegister() {
+            document.getElementById("popupRegister").style.display = "flex";
+            document.getElementById("popupLogin").style.display = "none";
+        }
+
+        function closePopupRegister() {
+            document.getElementById("popupRegister").style.display = "none";
+        }
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+    
+        mobileMenuButton.addEventListener('click', () => {
+            if (mobileMenu.style.display === 'none' || mobileMenu.style.display === '') {
+                mobileMenu.style.display = 'block';
+
+            } else {
+                mobileMenu.style.display = 'none';
+            }
+        });
+        function showTime() {
+            const date =new Date();
+            const timeinidia =new Intl.DateTimeFormat('en-US',{
+                timeZone: 'Asia/Kolkata',
+                timeStyle: 'medium',
+                dateStyle: 'medium',
+            }).format(date);
+            const currentdate =timeinidia.slice(0,12);
+            const currentime =timeinidia.slice(13,24);
+            document.getElementById('currentdate').innerHTML = currentdate;
+            document.getElementById('currenttime').innerHTML = currentime;
+        }
+        showTime();
+        setInterval(function () {
+            showTime();
+        }, 1000);
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('copied:'+ text);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+        setTimeout(function() {
+            const alertDiv = document.getElementById('alert');
+            if (alertDiv) {
+                alertDiv.style.opacity = '0'; // Fade out
+                setTimeout(() => alertDiv.style.display = 'none', 500); // Hide after fade out
+            }
+        }, 3000);
+
+    </script>
+</body>
+</html>
