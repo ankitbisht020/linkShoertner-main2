@@ -1,2 +1,26 @@
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Logs
+logs/
+*.log
+debug.log
+error.log
+
+# Environment variables
 .env
-.node_modules
+.env.local
+
+# Build files
+dist/
+.out/
+.next/
+.vercel/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
