@@ -11,17 +11,5 @@
       "src": "/(.*)",
       "dest": "app.js"
     }
-  ],
-  "functions": {
-    "app.js": {
-      "includeFiles": ["models/**"]
-    }
-  }
-},
-  "ignoreCommand": "echo 'Ignoring nothing'",  
-  "functions": {
-    "app.js": {
-      "includeFiles": ["models/**"]
-    }
-  }
+  ]
 }
