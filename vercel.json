@@ -14,9 +14,8 @@
   ],
   "functions": {
     "index.js": {
-      "includeFiles": ["models/**"]
+      "includeFiles": "models/**"
     }
   },
   "ignoreCommand": "echo 'Ignoring nothing'"
 }
-
