@@ -24,6 +24,7 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
+console.log("okay00");
 
 app.use(flash());
 app.use((req, res, next) => {
@@ -34,7 +35,7 @@ app.use((req, res, next) => {
 app.use(usersRouter);
 
 
-app.listen(PORT, () => {
+app.listen(3010, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 

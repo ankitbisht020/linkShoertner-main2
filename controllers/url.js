@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const urlmodel = require('../models/urlmodel');
 const contact = require('../models/servicesupport');
 const jwt = require('jsonwebtoken');
-const app = require('../app');
+const app = require('../index');
 
 
 
